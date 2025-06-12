@@ -5,7 +5,7 @@ namespace App\Analytics;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class SalesAnalytics
 {
@@ -106,45 +106,25 @@ class SalesAnalytics
      */
     public static function revenueBreakdown($dimension = 'category', $startDate = null, $endDate = null)
     {
-        $query = DB::connection('duckdb')->query()
-            ->from('orders as o')
-            ->join('order_items as oi', 'o.order_id', '=', 'oi.order_id')
-            ->join('products as p', 'oi.product_id', '=', 'p.product_id')
-            ->where('o.status', 'completed');
-            
-        if ($startDate && $endDate) {
-            $query->whereBetween('o.order_date', [$startDate, $endDate]);
-        }
+        // Simple revenue breakdown using raw SQL to avoid memory issues
+        $sql = "
+            SELECT 
+                p.category,
+                COUNT(DISTINCT o.order_id) as order_count,
+                COUNT(DISTINCT o.customer_id) as unique_customers,
+                SUM(oi.quantity) as units_sold,
+                SUM(oi.total_price) as revenue,
+                SUM(oi.discount * oi.quantity) as total_discount,
+                AVG(oi.total_price / oi.quantity) as avg_unit_price
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN products p ON oi.product_id = p.product_id
+            WHERE o.status = 'completed'
+            GROUP BY p.category
+            ORDER BY revenue DESC
+        ";
         
-        $groupBy = match($dimension) {
-            'category' => ['p.category'],
-            'subcategory' => ['p.category', 'p.subcategory'],
-            'brand' => ['p.brand'],
-            'region' => ['o.region'],
-            'channel' => ['o.channel'],
-            'payment_method' => ['o.payment_method'],
-            'category_region' => ['p.category', 'o.region'],
-            default => ['p.category']
-        };
-        
-        $selectColumns = array_merge(
-            $groupBy,
-            [
-                DB::raw('COUNT(DISTINCT o.order_id) as order_count'),
-                DB::raw('COUNT(DISTINCT o.customer_id) as unique_customers'),
-                DB::raw('SUM(oi.quantity) as units_sold'),
-                DB::raw('SUM(oi.total_price) as revenue'),
-                DB::raw('SUM(oi.discount * oi.quantity) as total_discount'),
-                DB::raw('SUM(oi.tax) as total_tax'),
-                DB::raw('AVG(oi.total_price / oi.quantity) as avg_unit_price'),
-            ]
-        );
-        
-        return $query
-            ->select($selectColumns)
-            ->groupBy($groupBy)
-            ->orderBy('revenue', 'desc')
-            ->get();
+        return Capsule::connection('duckdb')->select($sql);
     }
     
     /**
@@ -163,7 +143,7 @@ class SalesAnalytics
             default => 'SUM(total_amount)'
         };
         
-        return DB::connection('duckdb')->query()
+        return Capsule::connection('duckdb')->query()
             ->fromRaw("(
                 SELECT 
                     DATE_TRUNC('{$granularity}', order_date) as period,
@@ -201,7 +181,7 @@ class SalesAnalytics
             ->get();
             
         // Calculate moving averages
-        $maData = DB::connection('duckdb')->query()
+        $maData = Capsule::connection('duckdb')->query()
             ->withCte('daily_revenue', function($query) use ($lookbackDays) {
                 $query->from('orders')
                     ->where('status', 'completed')
@@ -253,7 +233,7 @@ class SalesAnalytics
             $dateFilter = "AND view_timestamp BETWEEN '{$startDate}' AND '{$endDate}'";
         }
         
-        return DB::connection('duckdb')->select("
+        return Capsule::connection('duckdb')->select("
             WITH funnel_stages AS (
                 SELECT 
                     COUNT(DISTINCT session_id) as total_sessions,

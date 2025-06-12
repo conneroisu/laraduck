@@ -5,19 +5,42 @@ require __DIR__ . '/../../vendor/autoload.php';
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
+use Illuminate\Config\Repository as Config;
 use Laraduck\EloquentDuckDB\DuckDBServiceProvider;
+use Laraduck\EloquentDuckDB\Connectors\DuckDBConnector;
+use Laraduck\EloquentDuckDB\Database\DuckDBConnection;
 
 // Create container
 $container = new Container;
 Container::setInstance($container);
 
+// Setup config service with database connections array
+$config = new Config([
+    'database' => [
+        'connections' => []
+    ]
+]);
+$container->instance('config', $config);
+
+// Setup Eloquent with our container
+$capsule = new Capsule($container);
+
+// Register the database manager in container
+$container->instance('db', $capsule->getDatabaseManager());
+
 // Register service provider
 $provider = new DuckDBServiceProvider($container);
 $provider->register();
 
-// Setup Eloquent
-$capsule = new Capsule;
-$capsule->setContainer($container);
+// Manually extend Capsule's database manager with DuckDB driver
+$capsule->getDatabaseManager()->extend('duckdb', function ($config, $name) {
+    $config['name'] = $name;
+    
+    $connector = new DuckDBConnector();
+    $connection = $connector->connect($config);
+    
+    return new DuckDBConnection($connection, $config['database'], $config['prefix'] ?? '', $config);
+});
 
 // Add DuckDB connection
 $capsule->addConnection([

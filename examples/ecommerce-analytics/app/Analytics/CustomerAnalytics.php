@@ -4,7 +4,7 @@ namespace App\Analytics;
 
 use App\Models\Customer;
 use App\Models\Order;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 class CustomerAnalytics
 {
@@ -13,71 +13,44 @@ class CustomerAnalytics
      */
     public static function customerSegmentation()
     {
-        // RFM-based segmentation
-        $rfmData = Customer::rfmAnalysis()->get();
+        // Simple segmentation based on existing customer_segment field
+        $segments = Capsule::connection('duckdb')->select("
+            SELECT 
+                customer_segment as segment,
+                COUNT(*) as count,
+                AVG(CASE 
+                    WHEN orders.last_order IS NOT NULL 
+                    THEN DATEDIFF('day', orders.last_order, CURRENT_DATE) 
+                    ELSE 365 
+                END) as avg_recency,
+                COALESCE(AVG(orders.order_count), 0) as avg_frequency,
+                COALESCE(SUM(orders.total_amount), 0) as total_value
+            FROM customers 
+            LEFT JOIN (
+                SELECT 
+                    customer_id,
+                    MAX(order_date) as last_order,
+                    COUNT(*) as order_count,
+                    SUM(total_amount) as total_amount
+                FROM orders 
+                WHERE status = 'completed'
+                GROUP BY customer_id
+            ) as orders ON customers.customer_id = orders.customer_id
+            GROUP BY customer_segment
+            ORDER BY count DESC
+        ");
         
-        // Define segment rules
-        $segments = $rfmData->map(function ($customer) {
-            $rfm = $customer->rfm_segment;
-            
-            // Champions: Bought recently, buy often, spend the most
-            if (in_array($rfm, ['555', '554', '544', '545', '454', '455', '445'])) {
-                return array_merge($customer->toArray(), ['segment' => 'Champions']);
-            }
-            
-            // Loyal Customers: Spend good money, responsive to promotions
-            if (in_array($rfm, ['543', '444', '435', '355', '354', '345', '344', '335'])) {
-                return array_merge($customer->toArray(), ['segment' => 'Loyal Customers']);
-            }
-            
-            // Potential Loyalists: Recent customers, spent good amount, bought more than once
-            if (in_array($rfm, ['553', '551', '552', '541', '542', '533', '532', '531', '451', '452'])) {
-                return array_merge($customer->toArray(), ['segment' => 'Potential Loyalists']);
-            }
-            
-            // New Customers: Bought recently, but not often
-            if (in_array($rfm, ['512', '511', '422', '421', '412', '411', '311'])) {
-                return array_merge($customer->toArray(), ['segment' => 'New Customers']);
-            }
-            
-            // At Risk: Spent big money, purchased often but long time ago
-            if (in_array($rfm, ['155', '154', '144', '145', '254', '255', '245'])) {
-                return array_merge($customer->toArray(), ['segment' => 'At Risk']);
-            }
-            
-            // Can't Lose Them: Made big purchases and often, but haven't returned
-            if (in_array($rfm, ['155', '154', '144', '145', '255', '254', '245', '244'])) {
-                return array_merge($customer->toArray(), ['segment' => "Can't Lose Them"]);
-            }
-            
-            // Hibernating: Low spenders, low frequency, purchased long time ago
-            if (in_array($rfm, ['332', '322', '231', '241', '221', '213', '231', '211', '222'])) {
-                return array_merge($customer->toArray(), ['segment' => 'Hibernating']);
-            }
-            
-            // Lost: Lowest recency, frequency and monetary scores
-            if (in_array($rfm, ['111', '112', '121', '122', '123', '132', '133'])) {
-                return array_merge($customer->toArray(), ['segment' => 'Lost']);
-            }
-            
-            return array_merge($customer->toArray(), ['segment' => 'Other']);
+        // Convert to array format expected by the frontend
+        $segmentSummary = collect($segments)->mapWithKeys(function ($segment) {
+            return [$segment->segment => [
+                'count' => $segment->count,
+                'avg_recency' => round($segment->avg_recency, 1),
+                'avg_frequency' => round($segment->avg_frequency, 1),
+                'total_value' => round($segment->total_value, 2),
+            ]];
         });
         
-        // Aggregate by segment
-        $segmentSummary = collect($segments)->groupBy('segment')->map(function ($group) {
-            return [
-                'count' => $group->count(),
-                'avg_recency' => round($group->avg('recency'), 1),
-                'avg_frequency' => round($group->avg('frequency'), 1),
-                'avg_monetary' => round($group->avg('monetary'), 2),
-                'total_value' => round($group->sum('monetary'), 2),
-            ];
-        });
-        
-        return [
-            'segments' => $segmentSummary,
-            'customers' => $segments
-        ];
+        return $segmentSummary;
     }
     
     /**
@@ -85,7 +58,7 @@ class CustomerAnalytics
      */
     public static function lifetimeValueAnalysis($cohortSize = 'month')
     {
-        return DB::connection('duckdb')->query()
+        return Capsule::connection('duckdb')->query()
             ->withCte('customer_cohorts', function($query) use ($cohortSize) {
                 $query->from('customers as c')
                     ->join('orders as o', 'c.customer_id', '=', 'o.customer_id')
@@ -131,10 +104,10 @@ class CustomerAnalytics
      */
     public static function retentionAnalysis($cohortSize = 'month', $periods = 12)
     {
-        return DB::connection('duckdb')->query()
+        return Capsule::connection('duckdb')->query()
             ->withCte('user_cohorts', function($query) use ($cohortSize) {
                 $query->from('customers as c')
-                    ->join(DB::raw('(SELECT customer_id, MIN(order_date) as first_order_date FROM orders GROUP BY customer_id) as fo'), 
+                    ->join(Capsule::raw('(SELECT customer_id, MIN(order_date) as first_order_date FROM orders GROUP BY customer_id) as fo'), 
                            'c.customer_id', '=', 'fo.customer_id')
                     ->selectRaw('c.customer_id')
                     ->selectRaw("DATE_TRUNC(?, fo.first_order_date) as cohort_month", [$cohortSize]);
@@ -183,7 +156,7 @@ class CustomerAnalytics
         $churnData = Customer::churnIndicators($daysThreshold)->get();
         
         // Calculate churn risk scores
-        $riskScores = DB::connection('duckdb')->query()
+        $riskScores = Capsule::connection('duckdb')->query()
             ->withCte('customer_metrics', function($query) use ($daysThreshold) {
                 $query->fromRaw("({$churnData->toQuery()->toSql()}) as cm", $churnData->toQuery()->getBindings())
                     ->selectRaw('*')
@@ -246,7 +219,7 @@ class CustomerAnalytics
         }
         
         // Get new customers and their revenue over time
-        $acquisitionData = DB::connection('duckdb')->query()
+        $acquisitionData = Capsule::connection('duckdb')->query()
             ->withCte('new_customers', function($query) use ($dateFilter) {
                 $query->from('customers')
                     ->whereBetween('registration_date', $dateFilter)
@@ -283,7 +256,7 @@ class CustomerAnalytics
             })
             ->from('monthly_cohort_revenue as mcr')
             ->leftJoin('acquisition_costs as ac', 'mcr.acquisition_month', '=', 'ac.month')
-            ->leftJoin(DB::raw("(SELECT acquisition_month, COUNT(*) as new_customers FROM new_customers GROUP BY acquisition_month) as nc_count"), 
+            ->leftJoin(Capsule::raw("(SELECT acquisition_month, COUNT(*) as new_customers FROM new_customers GROUP BY acquisition_month) as nc_count"), 
                       'mcr.acquisition_month', '=', 'nc_count.acquisition_month')
             ->selectRaw('mcr.acquisition_month')
             ->selectRaw('mcr.months_since_acquisition')

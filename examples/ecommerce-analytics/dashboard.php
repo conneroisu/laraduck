@@ -4,6 +4,10 @@ require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/app/Analytics/SalesAnalytics.php';
 require __DIR__ . '/app/Analytics/CustomerAnalytics.php';
 require __DIR__ . '/app/Analytics/ProductAnalytics.php';
+require __DIR__ . '/app/Models/Customer.php';
+require __DIR__ . '/app/Models/Product.php';
+require __DIR__ . '/app/Models/Order.php';
+require __DIR__ . '/app/Models/OrderItem.php';
 
 use App\Analytics\SalesAnalytics;
 use App\Analytics\CustomerAnalytics;
@@ -43,7 +47,7 @@ if (strpos($requestUri, '/api/') === 0) {
                 
             case '/api/customer-segments':
                 $segments = CustomerAnalytics::customerSegmentation();
-                echo json_encode($segments['segments']);
+                echo json_encode($segments);
                 break;
                 
             default:
@@ -143,11 +147,31 @@ if (strpos($requestUri, '/api/') === 0) {
     </div>
     
     <script>
+        // Helper function to display errors inline
+        function showError(section, error) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
+            errorDiv.innerHTML = `
+                <strong class="font-bold">${section} Error:</strong>
+                <span class="block sm:inline">${error.message || 'Failed to load data'}</span>
+                <details class="mt-2">
+                    <summary class="cursor-pointer font-medium">Error Details</summary>
+                    <pre class="mt-2 text-xs bg-red-50 p-2 rounded overflow-auto">${error.stack || JSON.stringify(error, null, 2)}</pre>
+                </details>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.insertBefore(errorDiv, container.firstChild);
+        }
+
         // Fetch and display dashboard data
         async function loadDashboard() {
+            // Load executive metrics
             try {
-                // Load executive metrics
-                const dashboardData = await fetch('/api/dashboard').then(r => r.json());
+                const dashboardData = await fetch('/api/dashboard').then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    return r.json();
+                });
                 
                 document.getElementById('totalOrders').textContent = dashboardData.current_period.total_orders.toLocaleString();
                 document.getElementById('totalRevenue').textContent = '$' + dashboardData.current_period.total_revenue.toLocaleString();
@@ -168,9 +192,16 @@ if (strpos($requestUri, '/api/') === 0) {
                     element.textContent = (value >= 0 ? '+' : '') + value + '%';
                     element.className = 'font-medium ' + (value >= 0 ? 'text-green-600' : 'text-red-600');
                 });
+            } catch (error) {
+                showError('Executive Dashboard', error);
+            }
                 
-                // Load sales trend
-                const salesTrend = await fetch('/api/sales-trend?days=30').then(r => r.json());
+            // Load sales trend
+            try {
+                const salesTrend = await fetch('/api/sales-trend?days=30').then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    return r.json();
+                });
                 
                 const salesCtx = document.getElementById('salesTrendChart').getContext('2d');
                 new Chart(salesCtx, {
@@ -202,9 +233,16 @@ if (strpos($requestUri, '/api/') === 0) {
                         }
                     }
                 });
+            } catch (error) {
+                showError('Sales Trend Chart', error);
+            }
                 
-                // Load revenue by category
-                const categoryData = await fetch('/api/revenue-breakdown?dimension=category').then(r => r.json());
+            // Load revenue by category
+            try {
+                const categoryData = await fetch('/api/revenue-breakdown?dimension=category').then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    return r.json();
+                });
                 
                 const categoryCtx = document.getElementById('categoryChart').getContext('2d');
                 new Chart(categoryCtx, {
@@ -229,9 +267,16 @@ if (strpos($requestUri, '/api/') === 0) {
                         }
                     }
                 });
+            } catch (error) {
+                showError('Category Chart', error);
+            }
                 
-                // Load top products
-                const topProducts = await fetch('/api/top-products?limit=5').then(r => r.json());
+            // Load top products
+            try {
+                const topProducts = await fetch('/api/top-products?limit=5').then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    return r.json();
+                });
                 
                 const productsHtml = topProducts.map((p, i) => `
                     <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
@@ -247,9 +292,16 @@ if (strpos($requestUri, '/api/') === 0) {
                 `).join('');
                 
                 document.getElementById('topProducts').innerHTML = productsHtml;
+            } catch (error) {
+                showError('Top Products', error);
+            }
                 
-                // Load customer segments
-                const segments = await fetch('/api/customer-segments').then(r => r.json());
+            // Load customer segments
+            try {
+                const segments = await fetch('/api/customer-segments').then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    return r.json();
+                });
                 
                 const segmentCtx = document.getElementById('segmentsChart').getContext('2d');
                 new Chart(segmentCtx, {
@@ -272,10 +324,8 @@ if (strpos($requestUri, '/api/') === 0) {
                         }
                     }
                 });
-                
             } catch (error) {
-                console.error('Error loading dashboard:', error);
-                alert('Error loading dashboard data. Please check the console.');
+                showError('Customer Segments Chart', error);
             }
         }
         

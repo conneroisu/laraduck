@@ -63,7 +63,7 @@ class DataGenerator
     
     protected function generateCustomers($count)
     {
-        $batchSize = 1000;
+        $batchSize = 100;
         $batches = ceil($count / $batchSize);
         
         for ($i = 0; $i < $batches; $i++) {
@@ -82,7 +82,7 @@ class DataGenerator
                     'country' => $this->faker->country,
                     'city' => $this->faker->city,
                     'age_group' => $this->faker->randomElement($this->ageGroups),
-                    'gender' => $this->faker->randomElement(['M', 'F', 'Other', null]),
+                    'gender' => $this->faker->randomElement(['M', 'F', 'Other']),
                     'customer_segment' => $this->getCustomerSegment()
                 ];
                 
@@ -90,7 +90,7 @@ class DataGenerator
                 $this->customers[] = $customerId;
             }
             
-            Customer::insertBatch($data);
+            Customer::insertBatch($data, 10);
             output("  Generated " . (($i + 1) * $batchSize) . " customers", 'info');
         }
     }
@@ -127,12 +127,12 @@ class DataGenerator
             }
         }
         
-        Product::insertBatch($data);
+        Product::insertBatch($data, 10);
     }
     
     protected function generateOrders($count)
     {
-        $batchSize = 1000;
+        $batchSize = 100;
         $batches = ceil($count / $batchSize);
         $startDate = now()->subYears(2);
         
@@ -195,8 +195,8 @@ class DataGenerator
                 $orderData[] = $order;
             }
             
-            Order::insertBatch($orderData);
-            OrderItem::insertBatch($itemData);
+            Order::insertBatch($orderData, 10);
+            OrderItem::insertBatch($itemData, 10);
             output("  Generated " . (($i + 1) * $batchSize) . " orders", 'info');
         }
     }

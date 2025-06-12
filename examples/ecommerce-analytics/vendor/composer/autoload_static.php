@@ -14,8 +14,8 @@ class ComposerStaticInit623e3e9574aed7f6bc2734a8918666f4
         '662a729f963d39afe703c9d9b7ab4a8c' => __DIR__ . '/..' . '/symfony/polyfill-php83/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
-        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
@@ -33,6 +33,7 @@ class ComposerStaticInit623e3e9574aed7f6bc2734a8918666f4
         '7f7ac2ddea9cc3fb4b2cc201d63dbc10' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Log/functions.php',
         '493c6aea52f6009bab023b26c21a386a' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/functions.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        '98caa11a197f6516a8e48aa4abb5ccc6' => __DIR__ . '/..' . '/inertiajs/inertia-laravel/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -113,6 +114,7 @@ class ComposerStaticInit623e3e9574aed7f6bc2734a8918666f4
         ),
         'I' => 
         array (
+            'Inertia\\' => 8,
             'Illuminate\\Support\\' => 19,
             'Illuminate\\' => 11,
         ),
@@ -361,6 +363,10 @@ class ComposerStaticInit623e3e9574aed7f6bc2734a8918666f4
         'Laraduck\\EloquentDuckDB\\' => 
         array (
             0 => __DIR__ . '/..' . '/laraduck/eloquent-duckdb/src',
+        ),
+        'Inertia\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/inertiajs/inertia-laravel/src',
         ),
         'Illuminate\\Support\\' => 
         array (

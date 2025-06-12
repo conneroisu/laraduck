@@ -3,6 +3,10 @@
 require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/database/migrations/create_tables.php';
 require __DIR__ . '/database/seeders/DataGenerator.php';
+require __DIR__ . '/app/Models/Customer.php';
+require __DIR__ . '/app/Models/Product.php';
+require __DIR__ . '/app/Models/Order.php';
+require __DIR__ . '/app/Models/OrderItem.php';
 
 use Database\Seeders\DataGenerator;
 
