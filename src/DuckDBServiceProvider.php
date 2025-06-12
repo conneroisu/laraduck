@@ -6,6 +6,9 @@ use Illuminate\Database\Connection;
 use Illuminate\Support\ServiceProvider;
 use Laraduck\EloquentDuckDB\Connectors\DuckDBConnector;
 use Laraduck\EloquentDuckDB\Database\DuckDBConnection;
+use Laraduck\EloquentDuckDB\Console\Commands\DuckDBInfoCommand;
+use Laraduck\EloquentDuckDB\Console\Commands\DuckDBFileCommand;
+use Laraduck\EloquentDuckDB\Console\Commands\DuckDBOptimizeCommand;
 
 class DuckDBServiceProvider extends ServiceProvider
 {
@@ -34,7 +37,11 @@ class DuckDBServiceProvider extends ServiceProvider
                 __DIR__ . '/Config/duckdb.php' => config_path('duckdb.php'),
             ], 'duckdb-config');
 
-            $this->commands([]);
+            $this->commands([
+                DuckDBInfoCommand::class,
+                DuckDBFileCommand::class,
+                DuckDBOptimizeCommand::class,
+            ]);
         }
     }
 
