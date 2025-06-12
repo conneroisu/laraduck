@@ -1,0 +1,5 @@
+> Composer\Config::disableProcessTimeout
+> @php -S localhost:8000 dashboard.php
+[Thu Jun 12 16:39:29 2025] PHP 8.4.1 Development Server (http://localhost:8000) started
+[Thu Jun 12 16:39:43 2025] [::1]:57799 Accepted
+[Thu Jun 12 16:39:43 2025] [::1]:57799 Closing

@@ -1,0 +1,279 @@
+---
+title: Laravel DuckDB
+description: Bring blazing-fast analytical queries to your Laravel applications
+template: splash
+hero:
+  tagline: DuckDB integration for Laravel Eloquent ORM - Transform your Laravel app into an analytical powerhouse
+  image:
+    file: ../../assets/hero-duck.svg
+  actions:
+    - text: Get Started
+      link: /getting-started/introduction/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/laraduck/laraduck
+      icon: external
+---
+
+import { Card, CardGrid, Tabs, TabItem } from '@astrojs/starlight/components';
+import CodeExample from '../../components/CodeExample.astro';
+import BenchmarkChart from '../../components/BenchmarkChart.astro';
+import FeatureCard from '../../components/FeatureCard.astro';
+import PerformanceMetric from '../../components/PerformanceMetric.astro';
+import CodeTabs from '../../components/CodeTabs.astro';
+
+## 🦆 Why Laravel DuckDB?
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+  <FeatureCard
+    icon="⚡"
+    title="Blazing Fast Analytics"
+    description="Process millions of rows in seconds with DuckDB's columnar engine. Perfect for real-time dashboards and complex reports."
+    link="/guides/performance"
+    linkText="See benchmarks"
+    badge="50x faster"
+    badgeVariant="new"
+  />
+  
+  <FeatureCard
+    icon="📂"
+    title="Query Files Directly"
+    description="Query Parquet, CSV, and JSON files without importing. Treat files as tables in your Eloquent queries - no ETL needed!"
+    link="/concepts/file-querying"
+    linkText="Learn more"
+  />
+  
+  <FeatureCard
+    icon="🎯"
+    title="Laravel Native"
+    description="Seamlessly integrates with Eloquent ORM. Use familiar Laravel patterns for analytical workloads - no learning curve!"
+    link="/getting-started/quick-start"
+    linkText="Get started"
+  />
+  
+  <FeatureCard
+    icon="🔥"
+    title="Advanced SQL Features"
+    description="Window functions, CTEs, QUALIFY clause, and more. All available through Laravel's fluent query builder."
+    link="/guides/window-functions"
+    linkText="Explore features"
+  />
+</div>
+
+## 🚀 Quick Start
+
+<Tabs>
+  <TabItem label="Basic Analytics">
+    ```php
+    use App\Models\Analytics\Sales;
+
+    // Query millions of rows efficiently
+    $topProducts = Sales::query()
+        ->select('product_id', 'product_name')
+        ->selectRaw('SUM(revenue) as total_revenue')
+        ->selectRaw('COUNT(*) as units_sold')
+        ->whereYear('created_at', 2024)
+        ->groupBy('product_id', 'product_name')
+        ->orderByDesc('total_revenue')
+        ->limit(10)
+        ->get();
+
+    // Results in milliseconds!
+    ```
+  </TabItem>
+  
+  <TabItem label="File Queries">
+    ```php
+    // Query Parquet files directly from S3
+    $sales = Sales::fromParquetFile('s3://analytics/sales/*.parquet')
+        ->whereDate('order_date', '>', now()->subDays(30))
+        ->groupBy('region', 'product_category')
+        ->selectRaw('region, product_category, SUM(revenue) as total')
+        ->get();
+
+    // Query CSV files without importing
+    $logs = LogEntry::fromCsvFile('/var/log/app/*.csv')
+        ->whereLevel('error')
+        ->groupBy('endpoint')
+        ->orderByDesc('count')
+        ->get();
+    ```
+  </TabItem>
+  
+  <TabItem label="Window Functions">
+    ```php
+    // Advanced analytics with window functions
+    $ranked = Sales::query()
+        ->select('*')
+        ->selectRaw('
+            RANK() OVER (
+                PARTITION BY region 
+                ORDER BY revenue DESC
+            ) as rank
+        ')
+        ->selectRaw('
+            LAG(revenue, 1) OVER (
+                PARTITION BY product_id 
+                ORDER BY date
+            ) as previous_revenue
+        ')
+        ->qualify('rank <= 5')
+        ->get();
+    ```
+  </TabItem>
+</Tabs>
+
+## 📊 Performance Benchmarks
+
+<div style="margin: 2rem 0;">
+  <h3 style="text-align: center; color: var(--sl-color-gray-2);">Real-World Performance Metrics</h3>
+  
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin: 2rem 0;">
+    <PerformanceMetric
+      label="Bulk Insert"
+      value="1.2"
+      unit="sec"
+      subtitle="100k rows (83,100/sec)"
+    />
+    <PerformanceMetric
+      label="Aggregations"
+      value="32.8"
+      unit="ms"
+      subtitle="110k rows grouped"
+    />
+    <PerformanceMetric
+      label="Window Functions"
+      value="45.2"
+      unit="ms"
+      subtitle="Complex analytics"
+    />
+    <PerformanceMetric
+      label="Parquet Read"
+      value="15.9"
+      unit="ms"
+      subtitle="1k rows (62,900/sec)"
+    />
+  </div>
+  
+  <h3 style="text-align: center; margin: 3rem 0 1rem; color: var(--sl-color-gray-2);">Database Comparison: Aggregation Query (110k rows)</h3>
+  
+  <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin: 2rem 0;">
+    <div style="text-align: center;">
+      <strong style="color: var(--sl-color-blue);">DuckDB</strong>
+      <div style="font-size: 2rem; font-weight: bold;">32.8ms</div>
+    </div>
+    <div style="text-align: center;">
+      <strong style="color: var(--sl-color-gray-3);">PostgreSQL</strong>
+      <div style="font-size: 2rem;">89.1ms</div>
+      <small style="color: var(--sl-color-gray-5);">2.7x slower</small>
+    </div>
+    <div style="text-align: center;">
+      <strong style="color: var(--sl-color-gray-3);">MySQL</strong>
+      <div style="font-size: 2rem;">156.3ms</div>
+      <small style="color: var(--sl-color-gray-5);">4.8x slower</small>
+    </div>
+    <div style="text-align: center;">
+      <strong style="color: var(--sl-color-gray-3);">SQLite</strong>
+      <div style="font-size: 2rem;">234.6ms</div>
+      <small style="color: var(--sl-color-gray-5);">7.2x slower</small>
+    </div>
+  </div>
+  
+  <p style="text-align: center; margin-top: 1rem;">
+    <a href="/BENCHMARKS" style="color: var(--sl-color-blue);">View detailed benchmarks →</a>
+  </p>
+</div>
+
+## 🎯 Perfect Use Cases
+
+<div class="feature-grid">
+  <div class="feature-card">
+    <h3>📈 Analytics Dashboards</h3>
+    <p>Build real-time dashboards that aggregate millions of rows without pre-computation. Update metrics on-the-fly!</p>
+  </div>
+  
+  <div class="feature-card">
+    <h3>📊 Reporting Systems</h3>
+    <p>Generate complex reports instantly. No more waiting for batch jobs or materialized views.</p>
+  </div>
+  
+  <div class="feature-card">
+    <h3>🔍 Log Analysis</h3>
+    <p>Query log files directly from disk or S3. Analyze patterns without complex ETL pipelines.</p>
+  </div>
+  
+  <div class="feature-card">
+    <h3>📉 Time Series Data</h3>
+    <p>Efficient storage and lightning-fast queries for time-series data. Perfect for IoT and monitoring.</p>
+  </div>
+  
+  <div class="feature-card">
+    <h3>🏭 Data Warehousing</h3>
+    <p>Build data marts within your Laravel app. Query across multiple data sources seamlessly.</p>
+  </div>
+  
+  <div class="feature-card">
+    <h3>🧪 Data Science</h3>
+    <p>Exploratory data analysis right in Laravel. Export results to Python/R when needed.</p>
+  </div>
+</div>
+
+## 🛠️ Installation
+
+<div class="info-box">
+  <strong>Prerequisites:</strong> Laravel 9.0+ and PHP 8.1+
+</div>
+
+```bash
+# Install via Composer
+composer require laraduck/laraduck
+
+# Publish configuration
+php artisan vendor:publish --tag="laraduck-config"
+```
+
+```php
+// config/database.php
+'connections' => [
+    'analytics' => [
+        'driver' => 'duckdb',
+        'database' => storage_path('analytics.duckdb'),
+        'read_only' => false,
+        'threads' => 4,
+        'memory_limit' => '4GB',
+    ],
+],
+```
+
+```php
+// app/Models/Analytics/Sales.php
+namespace App\Models\Analytics;
+
+use Laraduck\Model\DuckDBModel;
+
+class Sales extends DuckDBModel
+{
+    protected $connection = 'analytics';
+    protected $table = 'sales';
+}
+```
+
+## 🎉 Ready to Get Started?
+
+<div class="hero" style="text-align: center; padding: 3rem 0;">
+  <p style="font-size: 1.25rem; margin-bottom: 2rem;">
+    Join thousands of developers using Laravel DuckDB for blazing-fast analytics
+  </p>
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <a href="/getting-started/introduction/" class="sl-link-button primary">
+      📖 Read the Docs
+    </a>
+    <a href="/getting-started/quick-start/" class="sl-link-button secondary">
+      🚀 Quick Start Guide
+    </a>
+    <a href="https://github.com/laraduck/laraduck" class="sl-link-button secondary">
+      ⭐ Star on GitHub
+    </a>
+  </div>
+</div>

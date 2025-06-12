@@ -1,0 +1,4 @@
+> Composer\Config::disableProcessTimeout
+> @php -S localhost:8000 dashboard.php
+[Thu Jun 12 16:39:10 2025] Failed to listen on localhost:8000 (reason: Address already in use)
+Script @php -S localhost:8000 dashboard.php handling the dev event returned with error code 1

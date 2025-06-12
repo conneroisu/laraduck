@@ -1,0 +1,152 @@
+---
+interface Props {
+  label: string;
+  value: string | number;
+  unit?: string;
+  comparison?: {
+    label: string;
+    value: string | number;
+    unit?: string;
+  };
+  improvement?: string;
+}
+
+const { label, value, unit = '', comparison, improvement } = Astro.props;
+---
+
+<div class="perf-metric-container">
+  <div class="perf-metric-card primary">
+    <h4>{label}</h4>
+    <div class="metric-value">
+      <span class="value">{value}</span>
+      {unit && <span class="unit">{unit}</span>}
+    </div>
+    {improvement && <div class="improvement">🚀 {improvement} faster</div>}
+  </div>
+  
+  {comparison && (
+    <>
+      <div class="vs-indicator">VS</div>
+      <div class="perf-metric-card secondary">
+        <h4>{comparison.label}</h4>
+        <div class="metric-value">
+          <span class="value">{comparison.value}</span>
+          {comparison.unit && <span class="unit">{comparison.unit}</span>}
+        </div>
+      </div>
+    </>
+  )}
+</div>
+
+<style>
+  .perf-metric-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .perf-metric-card {
+    flex: 1;
+    padding: 2rem;
+    border-radius: 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .perf-metric-card.primary {
+    background: linear-gradient(135deg, var(--duck-orange) 0%, var(--duck-yellow) 100%);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(255, 111, 0, 0.3);
+  }
+
+  .perf-metric-card.secondary {
+    background: var(--sl-color-bg-nav);
+    border: 2px solid var(--sl-color-gray-6);
+  }
+
+  .perf-metric-card:hover {
+    transform: translateY(-4px) scale(1.05);
+  }
+
+  .perf-metric-card.primary:hover {
+    box-shadow: 0 15px 40px rgba(255, 111, 0, 0.4);
+  }
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    opacity: 0.9;
+  }
+
+  .metric-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  .value {
+    font-size: 3rem;
+    font-weight: 800;
+    font-family: var(--sl-font-mono);
+    line-height: 1;
+  }
+
+  .unit {
+    font-size: 1.25rem;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  .improvement {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    display: inline-block;
+  }
+
+  .vs-indicator {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--sl-color-gray-3);
+    padding: 0.5rem 1rem;
+    background: var(--sl-color-bg);
+    border-radius: 0.5rem;
+    border: 2px solid var(--sl-color-gray-6);
+  }
+
+  @media (max-width: 768px) {
+    .perf-metric-container {
+      flex-direction: column;
+    }
+
+    .vs-indicator {
+      transform: rotate(90deg);
+      margin: 1rem 0;
+    }
+  }
+
+  /* Animation on scroll */
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .perf-metric-container {
+    animation: slideInUp 0.6s ease-out;
+  }
+</style>

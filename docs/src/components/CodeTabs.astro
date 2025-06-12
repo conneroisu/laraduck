@@ -1,0 +1,163 @@
+---
+interface Tab {
+  label: string;
+  code: string;
+  language?: string;
+}
+
+interface Props {
+  tabs: Tab[];
+  defaultTab?: number;
+}
+
+const { tabs, defaultTab = 0 } = Astro.props;
+const id = Math.random().toString(36).substring(7);
+---
+
+<div class="code-tabs" data-tabs-id={id}>
+  <div class="tabs-header">
+    {tabs.map((tab, index) => (
+      <button
+        class={`tab-button ${index === defaultTab ? 'active' : ''}`}
+        data-tab-index={index}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </div>
+  <div class="tabs-content">
+    {tabs.map((tab, index) => (
+      <div class={`tab-pane ${index === defaultTab ? 'active' : ''}`} data-tab-index={index}>
+        <pre><code class={`language-${tab.language || 'javascript'}`}>{tab.code}</code></pre>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabContainers = document.querySelectorAll('.code-tabs');
+    
+    tabContainers.forEach(container => {
+      const buttons = container.querySelectorAll('.tab-button');
+      const panes = container.querySelectorAll('.tab-pane');
+      
+      buttons.forEach(button => {
+        button.addEventListener('click', () => {
+          const index = button.getAttribute('data-tab-index');
+          
+          // Remove active class from all buttons and panes
+          buttons.forEach(b => b.classList.remove('active'));
+          panes.forEach(p => p.classList.remove('active'));
+          
+          // Add active class to clicked button and corresponding pane
+          button.classList.add('active');
+          panes[index].classList.add('active');
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .code-tabs {
+    margin: 2rem 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    background: var(--sl-color-bg-nav);
+    border: 1px solid var(--sl-color-gray-6);
+  }
+
+  .tabs-header {
+    display: flex;
+    background: var(--sl-color-bg-sidebar);
+    border-bottom: 2px solid var(--sl-color-gray-6);
+    overflow-x: auto;
+  }
+
+  .tab-button {
+    padding: 1rem 1.5rem;
+    border: none;
+    background: transparent;
+    color: var(--sl-color-gray-3);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .tab-button:hover {
+    color: var(--sl-color-accent);
+    background: rgba(255, 111, 0, 0.05);
+  }
+
+  .tab-button.active {
+    color: var(--sl-color-accent);
+    background: var(--sl-color-bg-nav);
+  }
+
+  .tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-accent);
+  }
+
+  .tabs-content {
+    position: relative;
+    background: var(--sl-color-bg-nav);
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-pane pre {
+    margin: 0;
+    padding: 1.5rem;
+    overflow-x: auto;
+    background: transparent;
+  }
+
+  .tab-pane code {
+    font-family: var(--sl-font-mono);
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Custom scrollbar for tabs */
+  .tabs-header::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs-header::-webkit-scrollbar-track {
+    background: var(--sl-color-gray-6);
+  }
+
+  .tabs-header::-webkit-scrollbar-thumb {
+    background: var(--sl-color-accent);
+    border-radius: 2px;
+  }
+</style>

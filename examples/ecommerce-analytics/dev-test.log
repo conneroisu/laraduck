@@ -1,0 +1,9 @@
+> Composer\Config::disableProcessTimeout
+> @php artisan serve --host=localhost --port=8000 & npm run dev
+Could not open input file: artisan
+
+> dev
+> vite
+
+sh: line 1: vite: command not found
+Script @php artisan serve --host=localhost --port=8000 & npm run dev handling the dev event returned with error code 127
