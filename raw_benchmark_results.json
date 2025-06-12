@@ -1,0 +1,19 @@
+{
+    "timestamp": "2025-06-12 13:34:19",
+    "php_version": "8.4.1",
+    "duckdb_version": "v1.2.2",
+    "results": {
+        "create_table": 87.33201026916504,
+        "insert_100_single": 4265.894889831543,
+        "insert_10k_bulk": 791.5291786193848,
+        "select_simple": 56.69999122619629,
+        "select_where": 42.1910285949707,
+        "aggregation": 114.70198631286621,
+        "group_by": 38.123130798339844,
+        "export_parquet": 45.642852783203125,
+        "read_parquet": 40.05718231201172,
+        "window_functions": 38.4979248046875
+    },
+    "total_time_ms": 5520.670175552368,
+    "rows_processed": 10100
+}

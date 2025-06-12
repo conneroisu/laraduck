@@ -1,0 +1,243 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import CallToAction from '@astrojs/starlight/components/CallToAction.astro';
+
+const { data } = Astro.props;
+const { hero = {} } = data;
+const { actions = [], tagline, image } = hero;
+
+const imageAttrs = {
+  loading: 'eager' as const,
+  decoding: 'async' as const,
+  width: 400,
+  height: 400,
+  alt: image?.alt || '',
+};
+---
+
+<div class="hero hero-enhanced">
+  <div class="announcement-banner">
+    <span class="announcement-text">
+      🎉 <strong>New:</strong> Laravel DuckDB v2.0 is here with 50x performance improvements!
+      <a href="/blog/v2-release">Learn more →</a>
+    </span>
+  </div>
+  
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1 class="hero-title gradient-text">{data.title}</h1>
+      {tagline && (
+        <div class="hero-tagline" set:html={tagline} />
+      )}
+      {actions.length > 0 && (
+        <div class="hero-actions">
+          {actions.map(({ text, ...attrs }) => (
+            <CallToAction {...attrs} class={attrs.variant === 'primary' ? 'pulse-on-hover' : ''} set:html={text} />
+          ))}
+        </div>
+      )}
+      
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value">50x</div>
+          <div class="stat-label">Faster Queries</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">10k+</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">⭐ 5k</div>
+          <div class="stat-label">GitHub Stars</div>
+        </div>
+      </div>
+    </div>
+    
+    {image && (
+      <div class="hero-image">
+        <img {...imageAttrs} {...image} class="logo-duck" />
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .hero-enhanced {
+    position: relative;
+    overflow: visible;
+    margin: -2rem -2rem 3rem;
+    padding: 0;
+  }
+
+  .announcement-banner {
+    background: var(--gradient-accent);
+    color: white;
+    padding: 1rem 2rem;
+    text-align: center;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .announcement-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: float 10s ease-in-out infinite;
+  }
+
+  .announcement-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  .announcement-banner a {
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+
+  .announcement-banner a:hover {
+    text-decoration: none;
+  }
+
+  .hero-content {
+    padding: 4rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .hero-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0 0 1.5rem;
+  }
+
+  .gradient-text {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+  }
+
+  .hero-tagline {
+    font-size: 1.25rem;
+    color: var(--sl-color-gray-2);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--sl-color-gray-6);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--sl-color-accent);
+    font-family: var(--sl-font-mono);
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+    margin-top: 0.25rem;
+  }
+
+  .hero-image {
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .hero-image img {
+    width: 400px;
+    height: 400px;
+    object-fit: contain;
+  }
+
+  .hero-image::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120%;
+    height: 120%;
+    background: radial-gradient(circle, var(--sl-color-accent-low) 0%, transparent 70%);
+    opacity: 0.5;
+    z-index: -1;
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(-20px, -20px) rotate(180deg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 2rem;
+      padding: 3rem 1.5rem;
+    }
+
+    .hero-stats {
+      justify-content: center;
+    }
+
+    .hero-actions {
+      justify-content: center;
+    }
+
+    .hero-image img {
+      width: 300px;
+      height: 300px;
+    }
+  }
+</style>

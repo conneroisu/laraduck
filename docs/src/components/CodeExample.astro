@@ -1,0 +1,71 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  showLineNumbers?: boolean;
+}
+
+const { title, description, showLineNumbers = true } = Astro.props;
+---
+
+<div class="code-example">
+  {title && (
+    <div class="code-example-header">
+      <h4>{title}</h4>
+      {description && <p>{description}</p>}
+    </div>
+  )}
+  <div class="code-example-content" data-line-numbers={showLineNumbers}>
+    <slot />
+  </div>
+</div>
+
+<style>
+  .code-example {
+    margin: 2rem 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--sl-color-bg-sidebar);
+    border: 1px solid var(--sl-color-gray-6);
+    box-shadow: var(--shadow-md);
+  }
+
+  .code-example-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--sl-color-gray-6);
+    background: var(--sl-color-bg-nav);
+  }
+
+  .code-example-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--sl-color-text);
+  }
+
+  .code-example-header p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .code-example-content {
+    position: relative;
+  }
+
+  .code-example-content :global(pre) {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  /* Enhance code blocks within the example */
+  .code-example-content :global(.expressive-code) {
+    margin: 0;
+    box-shadow: none;
+  }
+
+  .code-example-content :global(.expressive-code):hover {
+    transform: none;
+    box-shadow: none;
+  }
+</style>

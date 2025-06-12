@@ -1,0 +1,143 @@
+---
+export interface Props {
+  title?: string;
+  data: Array<{
+    name: string;
+    value: number;
+    unit: string;
+    description?: string;
+    highlight?: boolean;
+  }>;
+}
+
+const { title = "Performance Benchmark", data } = Astro.props;
+const maxValue = Math.max(...data.map(d => d.value));
+---
+
+<div class="benchmark-chart">
+  <h3>{title}</h3>
+  <div class="benchmark-items">
+    {data.map((item) => (
+      <div class={`benchmark-item ${item.highlight ? 'highlight' : ''}`}>
+        <div class="benchmark-header">
+          <h4>{item.name}</h4>
+          <span class="benchmark-value">{item.value}{item.unit}</span>
+        </div>
+        {item.description && <p class="benchmark-description">{item.description}</p>}
+        <div class="benchmark-bar">
+          <div 
+            class="benchmark-fill" 
+            style={`width: ${(item.value / maxValue) * 100}%`}
+            data-value={`${item.value}${item.unit}`}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .benchmark-chart {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: var(--sl-color-bg-sidebar);
+    border-radius: 1rem;
+    border: 1px solid var(--sl-color-gray-6);
+  }
+
+  .benchmark-chart h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .benchmark-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .benchmark-item {
+    padding: 1.5rem;
+    background: var(--sl-color-bg);
+    border-radius: 0.75rem;
+    border: 1px solid var(--sl-color-gray-6);
+    transition: all 0.3s ease;
+  }
+
+  .benchmark-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .benchmark-item.highlight {
+    border-color: var(--sl-color-accent);
+    background: var(--sl-color-accent-low);
+  }
+
+  .benchmark-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+  }
+
+  .benchmark-header h4 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+
+  .benchmark-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--sl-color-accent);
+    font-family: var(--sl-font-mono);
+  }
+
+  .benchmark-description {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .benchmark-bar {
+    position: relative;
+    height: 2rem;
+    background: var(--sl-color-gray-6);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .benchmark-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: linear-gradient(90deg, var(--duck-orange) 0%, var(--duck-yellow) 100%);
+    border-radius: 1rem;
+    transition: width 1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.75rem;
+  }
+
+  .benchmark-fill::after {
+    content: attr(data-value);
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .benchmark-item.highlight .benchmark-fill {
+    background: linear-gradient(90deg, var(--sl-color-accent) 0%, var(--sl-color-accent-high) 100%);
+  }
+
+  @media (min-width: 768px) {
+    .benchmark-items {
+      gap: 1rem;
+    }
+  }
+</style>

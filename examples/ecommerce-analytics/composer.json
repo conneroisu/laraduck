@@ -1,0 +1,23 @@
+{
+    "name": "laraduck/ecommerce-analytics-example",
+    "description": "E-commerce analytics example using Laravel DuckDB",
+    "type": "project",
+    "require": {
+        "php": "^8.3",
+        "laravel/framework": "^11.0",
+        "laraduck/eloquent-duckdb": "@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
