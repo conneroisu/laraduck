@@ -24,8 +24,8 @@ class DuckDBGrammar extends BaseGrammar
         // DuckDB doesn't support inline foreign keys in CREATE TABLE
         // $sql = $this->addForeignKeys($sql, $blueprint);
 
-        // DuckDB doesn't support inline primary keys in CREATE TABLE
-        // $sql = $this->addPrimaryKeys($sql, $blueprint);
+        // DuckDB supports inline primary keys in CREATE TABLE (as of v1.2+)
+        $sql .= $this->addPrimaryKeys($this->getCommandByName($blueprint, 'primary'));
 
         $sql .= ')';
 
@@ -39,12 +39,24 @@ class DuckDBGrammar extends BaseGrammar
         return 'alter table '.$this->wrapTable($blueprint)." add column $columns";
     }
 
+    /**
+     * Get the primary key syntax for a table creation statement.
+     *
+     * @param  \Illuminate\Support\Fluent|null  $primary
+     * @return string|null
+     */
+    protected function addPrimaryKeys($primary)
+    {
+        if (! is_null($primary)) {
+            return ", primary key ({$this->columnize($primary->columns)})";
+        }
+    }
+
     public function compilePrimary(Blueprint $blueprint, Fluent $command)
     {
-        return sprintf('alter table %s add primary key (%s)',
-            $this->wrapTable($blueprint),
-            $this->columnize($command->columns)
-        );
+        // Primary keys are handled inline during table creation
+        // No need for separate ALTER TABLE statement
+        return null;
     }
 
     public function compileUnique(Blueprint $blueprint, Fluent $command)

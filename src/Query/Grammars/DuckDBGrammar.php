@@ -61,14 +61,20 @@ class DuckDBGrammar extends BaseGrammar
 
     protected function compileFrom(Builder $query, $from)
     {
-        $table = $this->wrapTable($from);
-
-        if ($this->isFileTable($from)) {
-            return "from '{$from}'";
+        // Handle Expression objects
+        $originalFrom = $from;
+        if ($from instanceof \Illuminate\Database\Query\Expression) {
+            $from = $from->getValue($this);
         }
+        
+        $table = $this->wrapTable($originalFrom);
 
         if ($this->isFunctionTable($from)) {
             return "from {$from}";
+        }
+
+        if ($this->isFileTable($from)) {
+            return "from '{$from}'";
         }
 
         return "from {$table}";
@@ -76,6 +82,15 @@ class DuckDBGrammar extends BaseGrammar
 
     protected function isFileTable($table)
     {
+        // Handle Expression objects
+        if ($table instanceof \Illuminate\Database\Query\Expression) {
+            $table = $table->getValue($this);
+        }
+        
+        if (!is_string($table)) {
+            return false;
+        }
+        
         $extensions = ['parquet', 'csv', 'json', 'tsv', 'xlsx'];
         
         foreach ($extensions as $ext) {
@@ -89,6 +104,15 @@ class DuckDBGrammar extends BaseGrammar
 
     protected function isFunctionTable($table)
     {
+        // Handle Expression objects
+        if ($table instanceof \Illuminate\Database\Query\Expression) {
+            $table = $table->getValue($this);
+        }
+        
+        if (!is_string($table)) {
+            return false;
+        }
+        
         $functions = ['read_csv', 'read_json', 'read_parquet', 'read_csv_auto', 'read_json_auto'];
         
         foreach ($functions as $func) {
@@ -158,7 +182,12 @@ class DuckDBGrammar extends BaseGrammar
         }
 
         if (isset($window['order'])) {
-            $over[] = 'order by ' . $this->compileOrderBy($query, $window['order']);
+            // Handle order as string or array
+            if (is_string($window['order'])) {
+                $over[] = 'order by ' . $window['order'];
+            } else {
+                $over[] = 'order by ' . $this->compileOrders($query, $window['order']);
+            }
         }
 
         if (isset($window['frame'])) {
@@ -233,6 +262,24 @@ class DuckDBGrammar extends BaseGrammar
         }
 
         return parent::parameter($value);
+    }
+
+    public function wrapTable($table)
+    {
+        // Handle Expression objects by getting their value
+        if ($table instanceof \Illuminate\Database\Query\Expression) {
+            $table = $table->getValue($this);
+        }
+        
+        if ($this->isFunctionTable($table)) {
+            return $table;
+        }
+        
+        if ($this->isFileTable($table)) {
+            return "'{$table}'";
+        }
+
+        return parent::wrapTable($table);
     }
 
     protected function wrapValue($value)

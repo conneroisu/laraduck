@@ -128,7 +128,9 @@ class Builder extends BaseBuilder
     public function blueprintClass($table)
     {
         $blueprint = new Blueprint($table);
-        $blueprint->setConnection($this->connection);
+        if (method_exists($blueprint, 'setConnection')) {
+            $blueprint->setConnection($this->connection);
+        }
         return $blueprint;
     }
 
@@ -143,5 +145,10 @@ class Builder extends BaseBuilder
 
             return $blueprint;
         };
+    }
+
+    protected function createBlueprint($table, ?\Closure $callback = null)
+    {
+        return $this->blueprintClass($table);
     }
 }

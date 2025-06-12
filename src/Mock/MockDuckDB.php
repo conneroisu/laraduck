@@ -1,11 +1,11 @@
 <?php
 
-namespace Saturio\DuckDB;
+namespace Laraduck\EloquentDuckDB\Mock;
 
 /**
  * Mock DuckDB implementation for testing
  */
-class DuckDB
+class MockDuckDB
 {
     protected $database;
     protected $results = [];
@@ -23,16 +23,16 @@ class DuckDB
     public function query($sql)
     {
         // Mock implementation - just return a result object
-        return new Result([]);
+        return new MockResult([]);
     }
     
     public function preparedStatement($sql)
     {
-        return new PreparedStatement($sql);
+        return new MockPreparedStatement($sql);
     }
 }
 
-class Result
+class MockResult
 {
     protected $rows;
     protected $currentRow = 0;
@@ -62,7 +62,7 @@ class Result
     }
 }
 
-class PreparedStatement
+class MockPreparedStatement
 {
     protected $sql;
     protected $params = [];
@@ -80,6 +80,6 @@ class PreparedStatement
     public function execute()
     {
         // Mock execution
-        return new Result([]);
+        return new MockResult([]);
     }
 }
