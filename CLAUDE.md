@@ -63,8 +63,15 @@ make test
 ./vendor/bin/phpunit tests/Unit
 ./vendor/bin/phpunit tests/Feature
 
+# Run specific test class
+./vendor/bin/phpunit tests/Unit/DuckDBGrammarTest.php
+./vendor/bin/phpunit tests/Feature/AnalyticalModelTest.php
+
 # Run linting (PHP syntax check)
 make lint
+
+# Verify installation and setup
+php verify.php
 
 # Format code (if in Nix environment)
 nix fmt
@@ -90,11 +97,17 @@ make clean
 
 ### Development Environment (Nix)
 ```bash
-# Enter development shell
+# Enter development shell with DuckDB and development tools
 nix develop
 
-# Format all code
+# Format all code (formats PHP, Nix, JS, CSS, MD, JSON)
 nix fmt
+
+# Development tools available in Nix shell:
+# - duckdb: DuckDB CLI for direct database interaction
+# - alejandra: Nix formatter
+# - prettierd: Multi-language formatter
+# - dx: Quick script to edit flake.nix
 ```
 
 ## Architecture
@@ -153,15 +166,25 @@ DuckDB connections are configured in Laravel's `config/database.php`:
 
 ### Testing Strategy
 
-- **Unit Tests** (`tests/Unit/`): Test individual components like grammar generation
-- **Feature Tests** (`tests/Feature/`): Test integration scenarios like model operations and connections
-- **Benchmarks** (`benchmarks/`): Performance testing and database comparisons
-- Test environment uses in-memory DuckDB (`:memory:`) for speed
+- **Unit Tests** (`tests/Unit/`): Test individual components like grammar generation, PDO wrappers, traits
+- **Feature Tests** (`tests/Feature/`): Test integration scenarios like model operations, connections, file queries
+- **Benchmarks** (`benchmarks/`): Performance testing and database comparisons with other databases
+- **Test Environment**: Uses in-memory DuckDB (`:memory:`) for speed, configured in `phpunit.xml`
+- **Test Base Class**: `TestCase` extends Orchestra Testbench with DuckDB service provider registration
+
+### Package Information
+
+- **Package Name**: `laraduck/eloquent-duckdb`
+- **Root Namespace**: `Laraduck\EloquentDuckDB\`
+- **Service Provider**: `Laraduck\EloquentDuckDB\DuckDBServiceProvider`
+- **Auto-Discovery**: Service provider is automatically registered via Laravel package discovery
 
 ### Example Usage Patterns
 
 **Basic Analytical Model**:
 ```php
+use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
+
 class Sale extends AnalyticalModel
 {
     protected $connection = 'analytics';
