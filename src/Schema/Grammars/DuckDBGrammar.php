@@ -395,7 +395,8 @@ class DuckDBGrammar extends BaseGrammar
 
     protected function modifyNullable(Blueprint $blueprint, Fluent $column)
     {
-        return $column->nullable ? '' : ' not null';
+        // DuckDB doesn't support NOT NULL constraints in this context
+        return '';
     }
 
     protected function modifyComment(Blueprint $blueprint, Fluent $column)

@@ -20,11 +20,12 @@
         "vite": "^5.0"
     },
     "dependencies": {
+        "@heroicons/react": "^2.2.0",
+        "@tanstack/react-query": "^5.0.0",
         "@tremor/react": "^3.13.0",
         "date-fns": "^3.0.0",
-        "recharts": "^2.10.0",
         "lucide-react": "^0.300.0",
         "react-hot-toast": "^2.4.1",
-        "@tanstack/react-query": "^5.0.0"
+        "recharts": "^2.10.0"
     }
 }

@@ -102,7 +102,24 @@ class DuckDBStatementWrapper
             return false;
         }
 
-        return $row[$column] ?? null;
+        $value = $row[$column] ?? null;
+        
+        // Handle NULL strings from DuckDB CLI
+        if ($value === 'NULL') {
+            return null;
+        }
+        
+        // Cast numeric strings to appropriate types
+        if (is_string($value) && is_numeric($value)) {
+            // If it looks like an integer, cast to int
+            if (ctype_digit($value) || (substr($value, 0, 1) === '-' && ctype_digit(substr($value, 1)))) {
+                return (int) $value;
+            }
+            // Otherwise cast to float
+            return (float) $value;
+        }
+        
+        return $value;
     }
 
     public function rowCount(): int
@@ -130,29 +147,48 @@ class DuckDBStatementWrapper
 
     protected function processFetchMode($row, $mode)
     {
+        // Convert numeric strings to appropriate types and handle NULL
+        $typeCastRow = [];
+        foreach ($row as $key => $value) {
+            // Handle NULL strings from DuckDB CLI
+            if ($value === 'NULL') {
+                $typeCastRow[$key] = null;
+            } elseif (is_string($value) && is_numeric($value)) {
+                // If it looks like an integer, cast to int
+                if (ctype_digit($value) || (substr($value, 0, 1) === '-' && ctype_digit(substr($value, 1)))) {
+                    $typeCastRow[$key] = (int) $value;
+                } else {
+                    // Otherwise cast to float
+                    $typeCastRow[$key] = (float) $value;
+                }
+            } else {
+                $typeCastRow[$key] = $value;
+            }
+        }
+        
         switch ($mode) {
             case PDO::FETCH_ASSOC:
-                return $row;
+                return $typeCastRow;
                 
             case PDO::FETCH_NUM:
-                return array_values($row);
+                return array_values($typeCastRow);
                 
             case PDO::FETCH_BOTH:
-                return array_merge($row, array_values($row));
+                return array_merge($typeCastRow, array_values($typeCastRow));
                 
             case PDO::FETCH_OBJ:
-                return (object) $row;
+                return (object) $typeCastRow;
                 
             case PDO::FETCH_CLASS:
                 $className = $this->fetchModeArgs[0] ?? 'stdClass';
                 $object = new $className();
-                foreach ($row as $key => $value) {
+                foreach ($typeCastRow as $key => $value) {
                     $object->$key = $value;
                 }
                 return $object;
                 
             default:
-                return $row;
+                return $typeCastRow;
         }
     }
 }

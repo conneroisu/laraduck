@@ -187,4 +187,43 @@ class DuckDBConnection extends Connection
         $result = $this->select("SELECT current_setting('{$key}') as value");
         return $result[0]->value ?? null;
     }
+
+    /**
+     * Override scalar method to ensure numeric values are properly cast
+     */
+    public function scalar($query, $bindings = [], $useReadPdo = true)
+    {
+        $result = $this->run($query, $bindings, function ($query, $bindings) use ($useReadPdo) {
+            if ($this->pretending()) {
+                return true;
+            }
+
+            $statement = $this->prepared(
+                $this->getPdoForSelect($useReadPdo)->prepare($query)
+            );
+
+            $this->bindValues($statement, $this->prepareBindings($bindings));
+
+            $statement->execute();
+
+            $result = $statement->fetchColumn();
+            
+            // Handle NULL strings from DuckDB CLI
+            if ($result === 'NULL') {
+                return null;
+            }
+            
+            // Cast numeric strings to appropriate types for DuckDB compatibility
+            if (is_string($result) && is_numeric($result)) {
+                if (ctype_digit($result) || (substr($result, 0, 1) === '-' && ctype_digit(substr($result, 1)))) {
+                    return (int) $result;
+                }
+                return (float) $result;
+            }
+            
+            return $result;
+        });
+
+        return $result;
+    }
 }

@@ -3,7 +3,7 @@
         'name' => 'laraduck/ecommerce-analytics-example',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '7e24bd29dd6f701db18942b1884ea81f4c9e4b25',
+        'reference' => 'c4b5f2cf937083148efcd5b45858a54f98579aba',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -334,7 +334,7 @@
         'laraduck/ecommerce-analytics-example' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '7e24bd29dd6f701db18942b1884ea81f4c9e4b25',
+            'reference' => 'c4b5f2cf937083148efcd5b45858a54f98579aba',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

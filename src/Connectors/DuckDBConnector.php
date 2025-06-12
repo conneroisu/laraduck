@@ -13,6 +13,11 @@ class DuckDBConnector extends Connector implements ConnectorInterface
     {
         $database = $config['database'] ?? ':memory:';
         
+        // Handle relative paths by making them absolute from Laravel's base path
+        if ($database !== ':memory:' && !str_starts_with($database, '/')) {
+            $database = base_path($database);
+        }
+        
         $duckdb = DuckDB::create($database);
         
         if (isset($config['read_only']) && $config['read_only']) {
@@ -36,6 +41,10 @@ class DuckDBConnector extends Connector implements ConnectorInterface
         if (isset($config['settings'])) {
             foreach ($config['settings'] as $key => $value) {
                 if ($value !== null) {
+                    // Handle boolean values properly
+                    if (is_bool($value)) {
+                        $value = $value ? 'true' : 'false';
+                    }
                     $duckdb->query("SET {$key} = '{$value}';");
                 }
             }

@@ -87,7 +87,12 @@ class CLIResult
                     $values = str_getcsv($lines[$i], ',', '"', '\\');
                     $row = [];
                     foreach ($this->columns as $idx => $col) {
-                        $row[$col] = $values[$idx] ?? null;
+                        $value = $values[$idx] ?? null;
+                        // Convert string "NULL" to actual null
+                        if ($value === 'NULL') {
+                            $value = null;
+                        }
+                        $row[$col] = $value;
                     }
                     $this->rows[] = $row;
                 }
