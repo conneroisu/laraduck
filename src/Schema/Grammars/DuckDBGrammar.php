@@ -147,12 +147,14 @@ class DuckDBGrammar extends BaseGrammar
 
     public function compileEnableForeignKeyConstraints()
     {
-        return 'pragma foreign_keys = on';
+        // DuckDB doesn't use pragma commands like SQLite
+        return '';
     }
 
     public function compileDisableForeignKeyConstraints()
     {
-        return 'pragma foreign_keys = off';
+        // DuckDB doesn't use pragma commands like SQLite
+        return '';
     }
 
     public function compileTableExists()

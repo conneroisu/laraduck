@@ -1,0 +1,27 @@
+> Composer\Config::disableProcessTimeout
+> @php -S localhost:8000 dashboard.php & npm run dev
+[Thu Jun 12 16:38:37 2025] PHP 8.4.1 Development Server (http://localhost:8000) started
+
+> dev
+> vite
+
+Port 5173 is in use, trying another one...
+node:fs:2426
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open 'public/hot'
+    at Object.writeFileSync (node:fs:2426:20)
+    at Server.<anonymous> (file:///Users/connerohnesorge/Documents/001Repos/laraduck/examples/ecommerce-analytics/node_modules/laravel-vite-plugin/dist/index.js:110:14)
+    at Object.onceWrapper (node:events:632:28)
+    at Server.emit (node:events:530:35)
+    at emitListeningNT (node:net:1980:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: 'public/hot'
+}
+
+Node.js v22.14.0
+Script @php -S localhost:8000 dashboard.php & npm run dev handling the dev event returned with error code 1

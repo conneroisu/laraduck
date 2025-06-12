@@ -70,9 +70,9 @@ class Builder extends BaseBuilder
         $this->disableForeignKeyConstraints();
 
         foreach ($tables as $table) {
-            $this->connection->statement(
-                $this->grammar->compileDropIfExists($this->blueprintClass($table))
-            );
+            $blueprint = $this->createBlueprint($table);
+            $blueprint->dropIfExists();
+            $this->build($blueprint);
         }
 
         $this->enableForeignKeyConstraints();

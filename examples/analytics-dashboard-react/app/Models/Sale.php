@@ -3,6 +3,9 @@
 namespace App\Models;
 
 use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
+use Laraduck\EloquentDuckDB\Eloquent\Traits\QueriesFiles;
+use Laraduck\EloquentDuckDB\Eloquent\Traits\QueriesDataFiles;
+use Laraduck\EloquentDuckDB\Eloquent\Traits\SupportsAdvancedQueries;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Sale extends AnalyticalModel
@@ -78,13 +81,13 @@ class Sale extends AnalyticalModel
         $query = static::query()
             ->select([
                 \DB::raw("$dateFormat as period"),
-                \DB::raw('COUNT(DISTINCT order_id) as total_orders'),
+                \DB::raw('COUNT(DISTINCT id) as total_orders'),
                 \DB::raw('COUNT(*) as total_items'),
                 \DB::raw('SUM(quantity) as total_quantity'),
-                \DB::raw('SUM(total_amount) as revenue'),
-                \DB::raw('SUM(discount_amount) as total_discount'),
-                \DB::raw('SUM(tax_amount) as total_tax'),
-                \DB::raw('AVG(total_amount) as avg_order_value'),
+                \DB::raw('SUM(revenue) as revenue'),
+                \DB::raw('SUM(0) as total_discount'), // No discount column in our schema
+                \DB::raw('SUM(0) as total_tax'), // No tax column in our schema
+                \DB::raw('AVG(revenue) as avg_order_value'),
                 \DB::raw('COUNT(DISTINCT customer_id) as unique_customers'),
             ])
             ->groupBy('period')
@@ -108,9 +111,9 @@ class Sale extends AnalyticalModel
                 'category',
                 'brand',
                 \DB::raw('COUNT(*) as units_sold'),
-                \DB::raw('SUM(total_amount) as revenue'),
-                \DB::raw('AVG(unit_price) as avg_price'),
-                \DB::raw('SUM(discount_amount) as total_discount'),
+                \DB::raw('SUM(revenue) as revenue'),
+                \DB::raw('AVG(price) as avg_price'),
+                \DB::raw('SUM(0) as total_discount'), // No discount column in our schema
             ])
             ->groupBy(['product_id', 'category', 'brand'])
             ->orderBy('revenue', 'desc')
@@ -131,14 +134,14 @@ class Sale extends AnalyticalModel
         return static::query()
             ->window('ranked', function ($window) {
                 $window->partitionBy('region')
-                       ->orderBy('total_amount', 'desc');
+                       ->orderBy('revenue', 'desc');
             })
             ->select([
                 '*',
                 \DB::raw('ROW_NUMBER() OVER ranked as rank_in_region'),
                 \DB::raw('PERCENT_RANK() OVER ranked as percentile_in_region'),
-                \DB::raw('SUM(total_amount) OVER (PARTITION BY region) as region_total'),
-                \DB::raw('AVG(total_amount) OVER (PARTITION BY region) as region_avg'),
+                \DB::raw('SUM(revenue) OVER (PARTITION BY region) as region_total'),
+                \DB::raw('AVG(revenue) OVER (PARTITION BY region) as region_avg'),
             ]);
     }
 
@@ -170,8 +173,8 @@ class Sale extends AnalyticalModel
                 'customer_cohorts.cohort',
                 \DB::raw("DATE_DIFF('month', customer_cohorts.first_purchase, sales.sale_date) as months_since_first"),
                 \DB::raw('COUNT(DISTINCT sales.customer_id) as customers'),
-                \DB::raw('SUM(sales.total_amount) as revenue'),
-                \DB::raw('COUNT(sales.order_id) as orders'),
+                \DB::raw('SUM(sales.revenue) as revenue'),
+                \DB::raw('COUNT(sales.id) as orders'),
             ])
             ->groupBy(['customer_cohorts.cohort', 'months_since_first'])
             ->orderBy('customer_cohorts.cohort')
@@ -192,8 +195,8 @@ class Sale extends AnalyticalModel
             })
             ->select([
                 'sale_date',
-                \DB::raw('SUM(total_amount) as daily_revenue'),
-                \DB::raw("AVG(SUM(total_amount)) OVER moving as moving_avg_{$days}d"),
+                \DB::raw('SUM(revenue) as daily_revenue'),
+                \DB::raw("AVG(SUM(revenue)) OVER moving as moving_avg_{$days}d"),
                 \DB::raw('COUNT(DISTINCT customer_id) as daily_customers'),
                 \DB::raw("AVG(COUNT(DISTINCT customer_id)) OVER moving as moving_avg_customers_{$days}d"),
             ])

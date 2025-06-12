@@ -64,9 +64,9 @@ class DashboardController extends Controller
             ->dateRange($startDate, $endDate)
             ->select([
                 'region',
-                \DB::raw('COUNT(DISTINCT order_id) as orders'),
-                \DB::raw('SUM(total_amount) as revenue'),
-                \DB::raw('AVG(total_amount) as avg_order_value'),
+                \DB::raw('COUNT(DISTINCT id) as orders'),
+                \DB::raw('SUM(revenue) as revenue'),
+                \DB::raw('AVG(revenue) as avg_order_value'),
             ])
             ->groupBy('region')
             ->orderBy('revenue', 'desc')
@@ -99,10 +99,10 @@ class DashboardController extends Controller
         $currentPeriod = Sale::query()
             ->dateRange($startDate, $endDate)
             ->select([
-                \DB::raw('SUM(total_amount) as revenue'),
-                \DB::raw('COUNT(DISTINCT order_id) as orders'),
+                \DB::raw('SUM(revenue) as revenue'),
+                \DB::raw('COUNT(DISTINCT id) as orders'),
                 \DB::raw('COUNT(DISTINCT customer_id) as customers'),
-                \DB::raw('AVG(total_amount) as avg_order_value'),
+                \DB::raw('AVG(revenue) as avg_order_value'),
             ])
             ->first();
 
@@ -114,10 +114,10 @@ class DashboardController extends Controller
         $previousPeriod = Sale::query()
             ->dateRange($prevStartDate, $prevEndDate)
             ->select([
-                \DB::raw('SUM(total_amount) as revenue'),
-                \DB::raw('COUNT(DISTINCT order_id) as orders'),
+                \DB::raw('SUM(revenue) as revenue'),
+                \DB::raw('COUNT(DISTINCT id) as orders'),
                 \DB::raw('COUNT(DISTINCT customer_id) as customers'),
-                \DB::raw('AVG(total_amount) as avg_order_value'),
+                \DB::raw('AVG(revenue) as avg_order_value'),
             ])
             ->first();
 

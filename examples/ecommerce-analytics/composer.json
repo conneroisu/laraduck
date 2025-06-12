@@ -16,9 +16,12 @@
     "scripts": {
         "dev": [
             "Composer\\Config::disableProcessTimeout",
-            "@php artisan serve --host=localhost --port=8000 & npm run dev"
+            "@php -S localhost:8000 dashboard.php"
         ],
-        "dev:stop": "pkill -f 'php artisan serve' && pkill -f 'vite'"
+        "dev:stop": "pkill -f 'php -S localhost:8000'",
+        "setup": "@php setup.php",
+        "analytics": "@php analytics.php",
+        "reports": "@php reports.php"
     },
     "repositories": [
         {

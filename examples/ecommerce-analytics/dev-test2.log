@@ -1,0 +1,9 @@
+> Composer\Config::disableProcessTimeout
+> @php -S localhost:8000 dashboard.php & npm run dev
+[Thu Jun 12 16:37:34 2025] Failed to listen on localhost:8000 (reason: Address already in use)
+
+> dev
+> vite
+
+sh: line 1: vite: command not found
+Script @php -S localhost:8000 dashboard.php & npm run dev handling the dev event returned with error code 127

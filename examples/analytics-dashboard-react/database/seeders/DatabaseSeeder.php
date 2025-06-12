@@ -30,10 +30,10 @@ class DatabaseSeeder extends Seeder
             // Table doesn't exist, skip
         }
         
-        // Configuration
-        $numCustomers = 10000;
-        $numProducts = 500;
-        $numOrders = 50000;
+        // Configuration - reduced for testing
+        $numCustomers = 1000;
+        $numProducts = 100;
+        $numOrders = 1000;
         $startDate = Carbon::now()->subYear();
         
         // Define constants
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ];
             
-            if (count($sales) >= 1000) {
+            if (count($sales) >= 100) { // Reduced batch size for DuckDB compatibility
                 DB::connection('duckdb')->table('sales')->insert($sales);
                 $sales = [];
                 echo "  Inserted $i sales records\n";

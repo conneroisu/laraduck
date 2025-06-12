@@ -35,6 +35,11 @@
         }
     ],
     "scripts": {
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "@php artisan serve --host=localhost --port=8001 & npm run dev"
+        ],
+        "dev:stop": "pkill -f 'php artisan serve' && pkill -f 'vite'",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

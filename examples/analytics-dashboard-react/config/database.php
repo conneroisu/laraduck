@@ -3,7 +3,7 @@
 use Illuminate\Support\Str;
 
 return [
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'duckdb'),
 
     'connections' => [
         'mysql' => [
@@ -30,16 +30,8 @@ return [
             'driver' => 'duckdb',
             'database' => env('DB_DATABASE', database_path('analytics.duckdb')),
             'read_only' => env('DB_READ_ONLY', false),
-            'memory_limit' => env('DB_MEMORY_LIMIT', '4GB'),
-            'threads' => env('DB_THREADS', 4),
-            'extensions' => [
-                // 'httpfs',  // For S3/HTTP file access
-                // 'parquet', // Parquet support (built-in)
-            ],
-            'settings' => [
-                'default_order' => 'DESC',
-                'preserve_insertion_order' => false,
-            ],
+            'memory_limit' => env('DB_MEMORY_LIMIT', '2GB'),
+            'threads' => env('DB_THREADS', 2),
         ],
     ],
 
