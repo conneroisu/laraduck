@@ -1,72 +1,72 @@
 {
-  "_ArrowTrendingUpIcon-2lnUlp6t.js": {
-    "file": "assets/ArrowTrendingUpIcon-2lnUlp6t.js",
+  "_ArrowTrendingUpIcon-Cf1rCHJL.js": {
+    "file": "assets/ArrowTrendingUpIcon-Cf1rCHJL.js",
     "name": "ArrowTrendingUpIcon",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
-  "_Tracker-C1ORik3G.js": {
-    "file": "assets/Tracker-C1ORik3G.js",
+  "_Tracker-D7VM74TC.js": {
+    "file": "assets/Tracker-D7VM74TC.js",
     "name": "Tracker",
     "imports": [
       "resources/js/app.jsx"
     ]
   },
   "resources/js/Pages/Analytics/Advanced.jsx": {
-    "file": "assets/Advanced-DEO9ugFT.js",
+    "file": "assets/Advanced-_NEfzOag.js",
     "name": "Advanced",
     "src": "resources/js/Pages/Analytics/Advanced.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Tracker-C1ORik3G.js"
+      "_Tracker-D7VM74TC.js"
     ]
   },
   "resources/js/Pages/Analytics/Customers.jsx": {
-    "file": "assets/Customers-Cltyu6pw.js",
+    "file": "assets/Customers-DpSAq_Ay.js",
     "name": "Customers",
     "src": "resources/js/Pages/Analytics/Customers.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Tracker-C1ORik3G.js",
-      "_ArrowTrendingUpIcon-2lnUlp6t.js"
+      "_Tracker-D7VM74TC.js",
+      "_ArrowTrendingUpIcon-Cf1rCHJL.js"
     ]
   },
   "resources/js/Pages/Analytics/Products.jsx": {
-    "file": "assets/Products-CXNK-r4f.js",
+    "file": "assets/Products-DpjYPaXK.js",
     "name": "Products",
     "src": "resources/js/Pages/Analytics/Products.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Tracker-C1ORik3G.js",
-      "_ArrowTrendingUpIcon-2lnUlp6t.js"
+      "_Tracker-D7VM74TC.js",
+      "_ArrowTrendingUpIcon-Cf1rCHJL.js"
     ]
   },
   "resources/js/Pages/Analytics/Sales.jsx": {
-    "file": "assets/Sales-5GGhiCgF.js",
+    "file": "assets/Sales-DMotvDZ_.js",
     "name": "Sales",
     "src": "resources/js/Pages/Analytics/Sales.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Tracker-C1ORik3G.js"
+      "_Tracker-D7VM74TC.js"
     ]
   },
   "resources/js/Pages/Dashboard/Index.jsx": {
-    "file": "assets/Index-BTBHLzaY.js",
+    "file": "assets/Index-Duxq6XM-.js",
     "name": "Index",
     "src": "resources/js/Pages/Dashboard/Index.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_Tracker-C1ORik3G.js"
+      "_Tracker-D7VM74TC.js"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-DxtiWuue.js",
+    "file": "assets/app-CRe4xN8M.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,

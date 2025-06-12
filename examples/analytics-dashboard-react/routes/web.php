@@ -33,11 +33,4 @@ Route::middleware(['web'])->group(function () {
         Route::get('/export', [AnalyticsController::class, 'export'])->name('export');
     });
     
-    // API Routes for AJAX requests
-    Route::prefix('api')->name('api.')->group(function () {
-        Route::get('/dashboard-metrics', [DashboardController::class, 'index'])->name('dashboard.metrics');
-        Route::get('/sales-data', [AnalyticsController::class, 'sales'])->name('sales.data');
-        Route::get('/customer-data', [AnalyticsController::class, 'customers'])->name('customers.data');
-        Route::get('/product-data', [AnalyticsController::class, 'products'])->name('products.data');
-    });
 });
