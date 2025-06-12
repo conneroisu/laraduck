@@ -1,4 +1,3 @@
-
 {
   description = "Hardware design using Go.";
 
@@ -15,7 +14,6 @@
   };
 
   outputs = inputs @ {
-    self,
     flake-utils,
     treefmt-nix,
     ...
@@ -62,9 +60,7 @@
       };
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs treefmtConfig;
-
     in {
-
       # Formatter output for `nix fmt`
       formatter = treefmtEval.config.build.wrapper;
 
@@ -91,7 +87,7 @@
 
             # Container runtime for VHS demos
             podman
-						duckdb
+            duckdb
 
             # treefmt
             treefmtEval.config.build.wrapper
