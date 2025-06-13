@@ -20,8 +20,6 @@ jobs:
     with:
       visibility: public
       fail-fast: true
-    env:
-      - NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM: 1
   build-pages:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest

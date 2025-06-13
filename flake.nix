@@ -78,15 +78,11 @@
             # Go Tools
             air
 
-            # Formatters
-            prettierd
-
             # LSP and Editor Integration Testing
             neovim
             lua-language-server
 
             # Container runtime for VHS demos
-            podman
             duckdb
 
             # treefmt
