@@ -166,6 +166,21 @@ DuckDB provides significant performance advantages for analytical workloads:
 
 ## 🛠️ Development
 
+### Code Quality
+
+Run these commands to maintain code quality:
+
+```bash
+# Check code style with Laravel Pint
+composer run lint
+
+# Fix code style issues automatically
+composer run lint:fix
+
+# Run tests
+composer run test
+```
+
 ### Adding New Analytics
 
 1. **Create a new scope in the Sale model:**

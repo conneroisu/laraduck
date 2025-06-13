@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
 
 class Customer extends AnalyticalModel
 {
@@ -17,11 +17,11 @@ class Customer extends AnalyticalModel
         'phone',
         'region',
         'acquisition_date',
-        'customer_type'
+        'customer_type',
     ];
 
     protected $casts = [
-        'acquisition_date' => 'datetime'
+        'acquisition_date' => 'datetime',
     ];
 
     /**

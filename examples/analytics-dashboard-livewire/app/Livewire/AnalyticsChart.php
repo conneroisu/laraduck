@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class AnalyticsChart extends Component
 {
     public $chartType = 'revenue';
+
     public $timeframe = '30days';
+
     public $chartData = [];
 
     public function mount()
@@ -29,7 +31,7 @@ class AnalyticsChart extends Component
 
     public function loadChartData()
     {
-        $days = match($this->timeframe) {
+        $days = match ($this->timeframe) {
             '7days' => 7,
             '30days' => 30,
             '90days' => 90,
@@ -62,7 +64,7 @@ class AnalyticsChart extends Component
                 return [
                     'date' => Carbon::parse($sale->date)->format('Y-m-d'),
                     'value' => (float) $sale->revenue,
-                    'label' => '$' . number_format($sale->revenue, 0)
+                    'label' => '$'.number_format($sale->revenue, 0),
                 ];
             })
             ->toArray();
@@ -77,7 +79,7 @@ class AnalyticsChart extends Component
                 return [
                     'date' => Carbon::parse($sale->date)->format('Y-m-d'),
                     'value' => (int) $sale->transactions,
-                    'label' => number_format($sale->transactions) . ' transactions'
+                    'label' => number_format($sale->transactions).' transactions',
                 ];
             })
             ->toArray();
@@ -94,7 +96,7 @@ class AnalyticsChart extends Component
                     'date' => Carbon::parse($sale->sale_date)->format('Y-m-d'),
                     'value' => (float) $sale->daily_revenue,
                     'moving_avg' => (float) $sale->moving_avg,
-                    'label' => '$' . number_format($sale->daily_revenue, 0)
+                    'label' => '$'.number_format($sale->daily_revenue, 0),
                 ];
             })
             ->toArray();

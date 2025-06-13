@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Product;
 use App\Models\Sale;
+use Livewire\Component;
 
 class ProductAnalytics extends Component
 {
     public $products = [];
+
     public $selectedCategory = 'all';
+
     public $categories = [];
 
     public function mount()
@@ -51,35 +53,35 @@ class ProductAnalytics extends Component
                 ELSE 0 
             END as total_profit
         ')
-        ->leftJoinSub(
-            Sale::selectRaw('
+            ->leftJoinSub(
+                Sale::selectRaw('
                 product_id,
                 SUM(total_amount) as total_revenue,
                 SUM(quantity) as total_units,
                 COUNT(*) as total_transactions
             ')->groupBy('product_id'),
-            'sales_data',
-            'products.id',
-            '=',
-            'sales_data.product_id'
-        )
-        ->orderBy('total_revenue', 'desc')
-        ->get()
-        ->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'category' => $product->category,
-                'price' => number_format($product->price, 2),
-                'cost' => number_format($product->cost, 2),
-                'profit_margin' => $product->profit_margin,
-                'total_revenue' => number_format($product->total_revenue, 2),
-                'total_units' => number_format($product->total_units),
-                'total_transactions' => number_format($product->total_transactions),
-                'total_profit' => number_format($product->total_profit, 2),
-            ];
-        })
-        ->toArray();
+                'sales_data',
+                'products.id',
+                '=',
+                'sales_data.product_id'
+            )
+            ->orderBy('total_revenue', 'desc')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category,
+                    'price' => number_format($product->price, 2),
+                    'cost' => number_format($product->cost, 2),
+                    'profit_margin' => $product->profit_margin,
+                    'total_revenue' => number_format($product->total_revenue, 2),
+                    'total_units' => number_format($product->total_units),
+                    'total_transactions' => number_format($product->total_transactions),
+                    'total_profit' => number_format($product->total_profit, 2),
+                ];
+            })
+            ->toArray();
     }
 
     public function render()

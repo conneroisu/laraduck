@@ -2,23 +2,22 @@
 
 /**
  * Laraduck Analytics Dashboard Setup Script
- * 
+ *
  * This script sets up the DuckDB database, runs migrations, and seeds sample data
  * for the Livewire Analytics Dashboard example.
  */
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
+use Database\Seeders\AnalyticsSeeder;
 use Illuminate\Foundation\Application;
-use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Illuminate\Foundation\Bootstrap\LoadConfiguration;
+use Illuminate\Foundation\Bootstrap\BootProviders;
 use Illuminate\Foundation\Bootstrap\HandleExceptions;
+use Illuminate\Foundation\Bootstrap\LoadConfiguration;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Foundation\Bootstrap\RegisterFacades;
 use Illuminate\Foundation\Bootstrap\RegisterProviders;
-use Illuminate\Foundation\Bootstrap\BootProviders;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Artisan;
-use Database\Seeders\AnalyticsSeeder;
 
 echo "🦆 Laraduck Analytics Dashboard Setup\n";
 echo "=====================================\n\n";
@@ -61,7 +60,7 @@ try {
         $connection->getPdo();
         echo "   ✅ DuckDB connection successful\n";
     } catch (Exception $e) {
-        echo "   ❌ DuckDB connection failed: " . $e->getMessage() . "\n";
+        echo '   ❌ DuckDB connection failed: '.$e->getMessage()."\n";
         echo "   💡 Make sure DuckDB is installed on your system\n";
         exit(1);
     }
@@ -70,13 +69,13 @@ try {
     echo "\n2. Running DuckDB migrations...\n";
     try {
         // Run migrations using direct SQL execution
-        $migrationFiles = glob(__DIR__ . '/database/migrations/*.php');
+        $migrationFiles = glob(__DIR__.'/database/migrations/*.php');
         sort($migrationFiles);
 
         foreach ($migrationFiles as $file) {
             $migrationName = basename($file, '.php');
             echo "   Running migration: $migrationName\n";
-            
+
             require_once $file;
             $className = 'return new class extends Illuminate\Database\Migrations\Migration';
             $migration = eval(str_replace('<?php', '', file_get_contents($file)));
@@ -84,14 +83,14 @@ try {
         }
         echo "   ✅ All migrations completed successfully\n";
     } catch (Exception $e) {
-        echo "   ❌ Migration failed: " . $e->getMessage() . "\n";
+        echo '   ❌ Migration failed: '.$e->getMessage()."\n";
         exit(1);
     }
 
     // Step 3: Seed sample data
     echo "\n3. Seeding sample analytics data...\n";
     try {
-        $seeder = new AnalyticsSeeder();
+        $seeder = new AnalyticsSeeder;
         $seeder->run();
         echo "   ✅ Sample data seeded successfully\n";
         echo "   📊 Created:\n";
@@ -99,7 +98,7 @@ try {
         echo "       - 50 customers in different regions\n";
         echo "       - 500 sales transactions over 90 days\n";
     } catch (Exception $e) {
-        echo "   ❌ Seeding failed: " . $e->getMessage() . "\n";
+        echo '   ❌ Seeding failed: '.$e->getMessage()."\n";
         exit(1);
     }
 
@@ -115,10 +114,10 @@ try {
         echo "       Products: $productCount\n";
         echo "       Customers: $customerCount\n";
         echo "       Sales: $salesCount\n";
-        echo "       Total Revenue: $" . number_format($totalRevenue, 2) . "\n";
+        echo '       Total Revenue: $'.number_format($totalRevenue, 2)."\n";
         echo "   ✅ Data verification completed\n";
     } catch (Exception $e) {
-        echo "   ❌ Data verification failed: " . $e->getMessage() . "\n";
+        echo '   ❌ Data verification failed: '.$e->getMessage()."\n";
         exit(1);
     }
 
@@ -136,10 +135,10 @@ try {
     echo "- Regional sales breakdowns\n\n";
 
 } catch (Exception $e) {
-    echo "❌ Setup failed: " . $e->getMessage() . "\n";
+    echo '❌ Setup failed: '.$e->getMessage()."\n";
     echo "\nDebugging information:\n";
-    echo "File: " . $e->getFile() . "\n";
-    echo "Line: " . $e->getLine() . "\n";
-    echo "Trace:\n" . $e->getTraceAsString() . "\n";
+    echo 'File: '.$e->getFile()."\n";
+    echo 'Line: '.$e->getLine()."\n";
+    echo "Trace:\n".$e->getTraceAsString()."\n";
     exit(1);
 }

@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
 use Laraduck\EloquentDuckDB\Eloquent\Traits\QueriesFiles;
 use Laraduck\EloquentDuckDB\Eloquent\Traits\SupportsAdvancedQueries;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Sale extends AnalyticalModel
 {
@@ -22,7 +22,7 @@ class Sale extends AnalyticalModel
         'sale_date',
         'region',
         'channel',
-        'discount_amount'
+        'discount_amount',
     ];
 
     protected $casts = [
@@ -30,7 +30,7 @@ class Sale extends AnalyticalModel
         'quantity' => 'integer',
         'unit_price' => 'decimal:2',
         'total_amount' => 'decimal:2',
-        'discount_amount' => 'decimal:2'
+        'discount_amount' => 'decimal:2',
     ];
 
     /**
@@ -59,10 +59,10 @@ class Sale extends AnalyticalModel
             'SUM(total_amount) as revenue',
             'COUNT(*) as transactions',
             'AVG(total_amount) as avg_transaction',
-            'SUM(quantity) as units_sold'
+            'SUM(quantity) as units_sold',
         ])
-        ->groupBy('date')
-        ->orderBy('date');
+            ->groupBy('date')
+            ->orderBy('date');
     }
 
     /**
@@ -75,10 +75,10 @@ class Sale extends AnalyticalModel
             'SUM(total_amount) as revenue',
             'COUNT(*) as transactions',
             'AVG(total_amount) as avg_transaction',
-            'COUNT(DISTINCT customer_id) as unique_customers'
+            'COUNT(DISTINCT customer_id) as unique_customers',
         ])
-        ->groupBy('region')
-        ->orderBy('revenue', 'desc');
+            ->groupBy('region')
+            ->orderBy('revenue', 'desc');
     }
 
     /**
@@ -90,11 +90,11 @@ class Sale extends AnalyticalModel
             'product_id',
             'SUM(total_amount) as revenue',
             'SUM(quantity) as units_sold',
-            'COUNT(*) as transactions'
+            'COUNT(*) as transactions',
         ])
-        ->groupBy('product_id')
-        ->orderBy('revenue', 'desc')
-        ->limit($limit);
+            ->groupBy('product_id')
+            ->orderBy('revenue', 'desc')
+            ->limit($limit);
     }
 
     /**
@@ -105,9 +105,9 @@ class Sale extends AnalyticalModel
         return $query->select([
             'sale_date',
             'SUM(total_amount) as daily_revenue',
-            'AVG(SUM(total_amount)) OVER (ORDER BY sale_date ROWS BETWEEN ? PRECEDING AND CURRENT ROW) as moving_avg'
+            'AVG(SUM(total_amount)) OVER (ORDER BY sale_date ROWS BETWEEN ? PRECEDING AND CURRENT ROW) as moving_avg',
         ], [$days - 1])
-        ->groupBy('sale_date')
-        ->orderBy('sale_date');
+            ->groupBy('sale_date')
+            ->orderBy('sale_date');
     }
 }

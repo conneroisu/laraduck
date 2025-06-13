@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Laraduck\EloquentDuckDB\Eloquent\AnalyticalModel;
 use Laraduck\EloquentDuckDB\Eloquent\Traits\QueriesFiles;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Product extends AnalyticalModel
 {
@@ -18,13 +18,13 @@ class Product extends AnalyticalModel
         'price',
         'cost',
         'description',
-        'active'
+        'active',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'cost' => 'decimal:2',
-        'active' => 'boolean'
+        'active' => 'boolean',
     ];
 
     /**

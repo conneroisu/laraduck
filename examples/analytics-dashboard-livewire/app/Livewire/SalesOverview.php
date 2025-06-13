@@ -2,17 +2,22 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class SalesOverview extends Component
 {
     public $totalRevenue;
+
     public $totalTransactions;
+
     public $averageTransaction;
+
     public $dailySales = [];
+
     public $regionSales = [];
+
     public $topProducts = [];
 
     public function mount()

@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Product;
 use App\Models\Customer;
+use App\Models\Product;
 use App\Models\Sale;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class AnalyticsSeeder extends Seeder
 {
@@ -33,8 +33,8 @@ class AnalyticsSeeder extends Seeder
                 'category' => $product['category'],
                 'price' => $product['price'],
                 'cost' => $product['cost'],
-                'description' => 'High-quality ' . $product['name'],
-                'active' => true
+                'description' => 'High-quality '.$product['name'],
+                'active' => true,
             ]);
         }
 
@@ -45,12 +45,12 @@ class AnalyticsSeeder extends Seeder
         for ($i = 1; $i <= 50; $i++) {
             Customer::create([
                 'id' => $i,
-                'name' => 'Customer ' . $i,
-                'email' => 'customer' . $i . '@example.com',
-                'phone' => '+1-' . rand(100, 999) . '-' . rand(100, 999) . '-' . rand(1000, 9999),
+                'name' => 'Customer '.$i,
+                'email' => 'customer'.$i.'@example.com',
+                'phone' => '+1-'.rand(100, 999).'-'.rand(100, 999).'-'.rand(1000, 9999),
                 'region' => $regions[array_rand($regions)],
                 'acquisition_date' => Carbon::now()->subDays(rand(30, 365)),
-                'customer_type' => $customerTypes[array_rand($customerTypes)]
+                'customer_type' => $customerTypes[array_rand($customerTypes)],
             ]);
         }
 
@@ -78,7 +78,7 @@ class AnalyticsSeeder extends Seeder
                 'discount_amount' => $discountAmount,
                 'sale_date' => $startDate->copy()->addDays(rand(0, 90))->addHours(rand(0, 23))->addMinutes(rand(0, 59)),
                 'region' => $customer->region,
-                'channel' => $channels[array_rand($channels)]
+                'channel' => $channels[array_rand($channels)],
             ]);
         }
     }

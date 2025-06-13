@@ -4,18 +4,17 @@
  * Quick Setup for Laraduck Analytics Dashboard
  * A simplified setup script that works without complex bootstrapping
  */
-
 echo "🦆 Laraduck Analytics Dashboard Quick Setup\n";
 echo "==========================================\n\n";
 
 // Check if we're in the right directory
-if (!file_exists('composer.json')) {
+if (! file_exists('composer.json')) {
     echo "❌ Please run this script from the analytics-dashboard-livewire directory\n";
     exit(1);
 }
 
 // Step 1: Check if vendor directory exists
-if (!is_dir('vendor')) {
+if (! is_dir('vendor')) {
     echo "❌ Vendor directory not found. Please run 'composer install' first.\n";
     exit(1);
 }
@@ -23,13 +22,13 @@ if (!is_dir('vendor')) {
 echo "1. Setting up Laravel environment...\n";
 
 // Create .env file if it doesn't exist
-if (!file_exists('.env')) {
+if (! file_exists('.env')) {
     if (file_exists('.env.example')) {
         copy('.env.example', '.env');
         echo "   ✅ .env file created from .env.example\n";
     } else {
         // Create a basic .env file
-        $envContent = "APP_NAME=LaraduckAnalytics
+        $envContent = 'APP_NAME=LaraduckAnalytics
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
@@ -37,14 +36,14 @@ APP_TIMEZONE=UTC
 APP_URL=http://localhost:8000
 
 DB_CONNECTION=sqlite
-DB_DATABASE=" . realpath('database/database.sqlite') . "
+DB_DATABASE='.realpath('database/database.sqlite').'
 
-DUCKDB_DATABASE=" . realpath('database/analytics.duckdb') . "
+DUCKDB_DATABASE='.realpath('database/analytics.duckdb').'
 DUCKDB_READ_ONLY=false
 DUCKDB_MEMORY_LIMIT=4GB
 DUCKDB_MAX_MEMORY=8GB
 DUCKDB_THREADS=4
-";
+';
         file_put_contents('.env', $envContent);
         echo "   ✅ .env file created\n";
     }
@@ -61,7 +60,7 @@ if ($return === 0) {
 
 // Create database directories
 echo "\n3. Creating database directories...\n";
-if (!is_dir('database')) {
+if (! is_dir('database')) {
     mkdir('database', 0755, true);
 }
 touch('database/database.sqlite');
@@ -75,7 +74,7 @@ if (empty($duckdbCheck)) {
     echo "   💡 Install DuckDB: https://duckdb.org/docs/installation/\n";
     echo "   📝 You can still continue, but analytics features may not work\n";
 } else {
-    echo "   ✅ DuckDB found: " . trim($duckdbCheck) . "\n";
+    echo '   ✅ DuckDB found: '.trim($duckdbCheck)."\n";
 }
 
 // Create storage directories
@@ -83,14 +82,14 @@ echo "\n5. Setting up storage directories...\n";
 $dirs = [
     'storage/app',
     'storage/framework/cache',
-    'storage/framework/sessions', 
+    'storage/framework/sessions',
     'storage/framework/views',
     'storage/logs',
-    'bootstrap/cache'
+    'bootstrap/cache',
 ];
 
 foreach ($dirs as $dir) {
-    if (!is_dir($dir)) {
+    if (! is_dir($dir)) {
         mkdir($dir, 0755, true);
     }
 }
