@@ -30,3 +30,8 @@ Homestead.json
 auth.json
 .direnv
 results
+
+# Database files
+database/
+*.sqlite
+*.duckdb
