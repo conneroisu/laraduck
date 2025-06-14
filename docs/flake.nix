@@ -46,16 +46,26 @@
     packages = forAllSystems (system: let
       pkgs = nixpkgs.legacyPackages.${system};
     in rec {
-      laraduck-docs = bun2nix.lib.${system}.mkBunDerivation {
+      laraduck-docs = pkgs.stdenv.mkDerivation {
         pname = "laraduck-docs";
         version = "0.0.1";
         src = ./.;
-        bunNix = ./bun.nix;
+
+        nativeBuildInputs = with pkgs; [
+          bun
+          nodejs
+        ];
 
         buildPhase = ''
-          cp -r ${./../examples} ./.
-          # Build the Astro site
-          bun run build
+          # Install dependencies
+          export HOME=$TMPDIR
+          bun install
+          
+          # Copy examples directory
+          cp -r ${./../examples} ./examples
+          
+          # Build the site with optimized settings
+          ASTRO_TELEMETRY_DISABLED=1 bun --bun run build
         '';
 
         installPhase = ''

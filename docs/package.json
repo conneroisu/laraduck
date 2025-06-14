@@ -7,13 +7,11 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro",
-    "postinstall": "bun2nix -o bun.nix"
+    "astro": "astro"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.15.4",
-    "astro": "^4.16.18",
-    "sharp": "^0.32.6"
+    "astro": "^4.16.18"
   },
   "devDependencies": {
     "@astrojs/check": "^0.3.4",
